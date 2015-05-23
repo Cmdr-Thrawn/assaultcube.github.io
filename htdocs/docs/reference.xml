@@ -1071,7 +1071,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
             </example>
           </examples>
           <arguments>
-            <argument token="N" description="color id" valueNotes="0 min, 9 max"/>
+            <argument token="N" description="color id" valueNotes="0-9,A-Z"/>
           </arguments>
           <references>
             <identifierReference identifier="cncolumncolor"/>
@@ -1537,13 +1537,88 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         </scriptalias>
         
         <command name="keybind">
-          <description>Returns the contents of a keybind.</description>
+          <description>Returns the contents of a keybind, bound with 'bind'.</description>
           <arguments>
             <argument token="K" description="name of key"/>
           </arguments>
           <references>
             <identifierReference identifier="findkey"/>
             <identifierReference identifier="findkeycode"/>
+            <identifierReference identifier="keyeditbind"/>
+            <identifierReference identifier="keyspecbind"/>
+          </references>
+        </command>
+
+        <command name="keyeditbind">
+          <description>Returns the contents of a keybind, bound with 'editbind'.</description>
+          <arguments>
+            <argument token="K" description="name of key"/>
+          </arguments>
+          <references>
+            <identifierReference identifier="keybind"/>
+            <identifierReference identifier="keyspecbind"/>
+          </references>
+        </command>
+
+        <command name="keyspecbind">
+          <description>Returns the contents of a keybind, bound with 'specbind'.</description>
+          <arguments>
+            <argument token="K" description="name of key"/>
+          </arguments>
+          <references>
+            <identifierReference identifier="keybind"/>
+            <identifierReference identifier="keyeditbind"/>
+          </references>
+        </command>
+
+        <command name="searchbinds">
+          <description>Search keybinds (bound with 'bind'), return keys with matching contents.</description>
+          <arguments>
+            <argument token="S" description="search string"/>
+          </arguments>
+          <examples>
+            <example>
+              <code><![CDATA[echo (searchbinds "reload")]]></code>
+              <explanation>Output: R</explanation>
+            </example>
+          </examples>
+          <remarks>
+            <remark>This is the inverse of 'keybind'</remark>
+          </remarks>
+          <references>
+            <identifierReference identifier="keybind"/>
+          </references>
+        </command>
+
+        <command name="searcheditbinds">
+          <description>Search keybinds (bound with 'editbind'), return keys with matching contents.</description>
+          <arguments>
+            <argument token="s" description="search string"/>
+          </arguments>
+          <examples>
+            <example>
+              <code><![CDATA[echo (searcheditbinds "toggleocull")]]></code>
+              <explanation>Output: F5</explanation>
+            </example>
+          </examples>
+          <remarks>
+            <remark>This is the inverse of 'keyeditbind'</remark>
+          </remarks>
+          <references>
+            <identifierReference identifier="keyeditbind"/>
+          </references>
+        </command>
+
+        <command name="searchspecbinds">
+          <description>Search keybinds (bound with 'specbind'), return keys with matching contents.</description>
+          <arguments>
+            <argument token="s" description="search string"/>
+          </arguments>
+          <remarks>
+            <remark>This is the inverse of 'keyspecbind'</remark>
+          </remarks>
+          <references>
+            <identifierReference identifier="keyspecbind"/>
           </references>
         </command>
 
@@ -1669,6 +1744,35 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           <examples>
           </examples>
         </command>
+
+        <command name="current_version">
+          <description>Checks a number against the current version, and notifies if the current version is older than the input.</description>
+          <arguments>
+            <argument token="s" description="Version to check against"/>
+          </arguments>
+          <remarks>
+            <remark>This is called when checking which version the masterserver is using.</remark>
+          </remarks>
+        </command>
+
+        <command name="winners">
+          <description>Returns the team number with the highest score, or if in a non-team mode, returns the CN of the player with the highest score.</description>
+        </command>
+
+        <command name="sortlist">
+          <description>Returns a sorted version of a list.</description>
+          <arguments>
+            <argument token="c" description="List to sort."/>
+          </arguments>
+        </command>
+
+        <variable name="compatibilitymode">
+          <description>Sets whether or not to enable compatibility settings for old scripts</description>
+          <value token="B" description="0: off, 1: on" minValue="0" maxValue="1" defaultValue="1" />
+          <remarks>
+            <remark>To see compatibility settings, look in config/compatibility.cfg</remark>
+          </remarks>
+        </variable>
 
       </identifiers>
     </section>
@@ -2022,6 +2126,21 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </arguments>
         </command>
 
+        <command name="execdir">
+          <description>Executes all commands in all config files in the specified directory.</description>
+          <arguments>
+            <argument token="s" description="the directory path from the assaultcube root"/>
+          </arguments>
+          <examples>
+            <example>
+              <code><![CDATA[execdir scripts]]></code>
+            </example>
+          </examples>
+          <references>
+            <identifierReference identifier="exec"/>
+          </references>
+        </command>
+
         <command name="run">
           <description>Executes a config file within /config/</description>
           <arguments>
@@ -2049,6 +2168,10 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           <arguments>
             <argument token="S" description="the sensitivity" valueNotes="floating-point"/>
           </arguments>
+        </command>
+
+        <command name="findsens">
+          <description>Initiate sensitivity training, to help you find what sensitivity setting you like.</description>
         </command>
 
         <command name="addserver">
@@ -3041,6 +3164,37 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </examples>
         </command>
 
+        <command name="player">
+          <description>Return attributes of a player.</description>
+          <arguments>
+            <argument token="CN" description="Client Number"/>
+            <argument token="A" description="The attribute to return." valueNotes="Valid attributes: name, team, ping, pj, state, role, frags, flags, points, deaths, tks, alive, spect, cn, skin_cla, skin_rvsf, skin, ip. If CN is on the same team as the local player, additional valid attributes: health, armour, attacking, scoping, x, y, z. If CN is the local player, additional valid attributes: magcontent, ammo, primary, curweapon, nextprimary."/>
+          </arguments>
+          <references>
+            <identifierReference identifier="player1"/>
+            <identifierReference identifier="currole"/>
+            <identifierReference identifier="curweapon"/>
+          </references>
+        </command>
+
+        <command name="player1">
+          <description>Returns attributes of the local player.</description>
+          <arguments>
+            <argument token="A" description="The attribute to return." valueNotes="See 'player' for valid attributes."/>
+          </arguments>
+          <references>
+            <identifierReference identifier="player"/>
+          </references>
+        </command>
+
+        <command name="teaminfo">
+          <description>Returns attributes of a team.</description>
+          <arguments>
+            <argument token="T" description="Team" valueNotes="cla, rvsf, 0, 1"/>
+            <argument token="A" description="Attribute" valueNotes="Valid attributes: flags, frags, deaths, points, name, players"/>
+          </arguments>
+        </command>
+
         <command name="curmap">
           <description>Returns the current map being played.</description>
           <remarks>
@@ -3070,6 +3224,13 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
             <identifierReference identifier="mode"/>
           </references>
         </command>
+
+        <variable name="nextGameMode">
+          <description>Holds the mode number for the next map loaded.</description>
+          <references>
+            <identifierReference identifier="mode"/>
+          </references>
+        </variable>
 
         <command name="modenum">
           <description>Returns the mode number for a specified mode acronym.</description>
@@ -3277,6 +3438,20 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </arguments>
         </command>
 
+        <command name="setnext">
+          <description>Calls a vote for a map to play in the next round.</description>
+          <arguments>
+            <argument token="A" description="mode acronym"/>
+            <argument token="M" description="map name"/>
+          </arguments>
+          <examples>
+            <example><code><![CDATA[setnext ctf ac_desert3]]></code></example>
+          </examples>
+          <references>
+            <identifierReference identifier="votemap"/>
+          </references>
+        </command>
+
         <command name="nextprimary">
           <description>Returns the primary weapon on next respawn.</description>
           <arguments>
@@ -3346,6 +3521,17 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
             <identifierReference identifier="quickanswer"/>
           </references>
         </command>
+
+        <variable name="lastpm">
+          <description>Holds the CN of the last client who sent you a private message.</description>
+          <references>
+            <identifierReference identifier="pm"/>
+            <identifierReference identifier="quickanswer"/>
+          </references>
+          <remarks>
+            <remark>If you haven't recieved any private messages, 'lastpm' is -1</remark>
+          </remarks>
+        </variable>
 
         <command name="quickanswer">
           <description>Easily respond the the last client who sent you a private message.</description>
@@ -4272,6 +4458,18 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </remarks>
         </command>
 
+        <command name="whereami">
+          <description>Prints the local client's (x,y) coordinates.</description>
+        </command>
+
+        <command name="burstshots">
+          <description>Set the firing mode of automatic weapons between full auto mode and burst fire mode.</description>
+          <arguments>
+            <argument token="W" description="weapon name" valueNotes="subgun, assault, or akimbo"/>
+            <argument token="S" description="shots per burst" valueNotes="Special values: 0: set weapon to full auto, -1: don't set, instead check and return shots per burst"/>
+          </arguments>
+        </command>
+
       </identifiers>
     </section>
     <!-- Gameplay Section Ends -->
@@ -4297,14 +4495,27 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         </command>
 
         <command name="getentattr">
-          <argument token="A" description="attribute" valueNotes="0..3"/>
+          <description>Returns the value of the selected entity attribute of the nearest entity.</description>
+          <arguments>
+            <argument token="A" description="attribute" valueNotes="0..3"/>
+          </arguments>
         </command>
 
-        <command name="getenttype"/>
+        <command name="getenttype">
+          <description>Returns the entity type of the nearest entity.</description>
+        </command>
+
         <command name="edittag">
           <arguments>
             <argument token="T" description="tag" valueNotes="integer value"/>
           </arguments>
+        </command>
+
+        <command name="transformclipentities">
+          <description>Transforms all clip entities to tag clips, if they are big enough (so that no player could be above or below them).</description>
+          <references>
+            <identifierReference identifier="edittag"/>
+          </references>
         </command>
 
         <command name="setjumpwp">
@@ -4540,6 +4751,16 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           <remarks>
             <remark>hotkey u</remark>
           </remarks>
+          <references>
+            <identifierReference identifier="redo"/>
+          </references>
+        </command>
+
+        <command name="redo">
+          <description>Redoes editing operations undone by 'undo'.</description>
+          <references>
+            <identifierReference identifier="undo"/>
+          </references>
         </command>
 
         <command name="undomegs">
@@ -5008,6 +5229,11 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           <value token="N" description="-" minValue="0" maxValue="1" defaultValue="1"/>
         </variable>
 
+        <variable name="showtagclips">
+          <description>Show tagclips/tagplclips in edit mode.</description>
+          <value token="N" description="-" minValue="0" maxValue="1" defaultValue="1" />
+        </variable>
+
         <command name="guidetoggle">
           <description>Enables or disables a special set of default textures while editing.</description>
           <remarks>
@@ -5215,6 +5441,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </references>
         </command>
 
+      <!-- Replaced?
         <command name="selsx">
           <description>Return a list containg the x-coordinate of each selection</description>
         </command>
@@ -5229,6 +5456,23 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
 
         <command name="selsys">
           <description>Return a list containg the y-span of each selection</description>
+        </command>
+      -->
+
+        <command name="selx">
+          <description>Returns the x-coordinate of the westernmost (towards negative x) cube(s) in the current selection.</description>
+        </command>
+
+        <command name="selxs">
+          <description>Returns the x-span (size on the x-axis) of the current selection.</description>
+        </command>
+
+        <command name="sely">
+          <description>Returns the y-coordinate of the northernmost (towards negative y) cube(s) in the current selection.</description>
+        </command>
+
+        <command name="selys">
+          <description>Returns the y-span (size on the y-axis) of the current selection.</description>
         </command>
 
         <command name="scalelights">
@@ -5285,7 +5529,62 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           <value token="N" description="0 off, 1 on" minValue="0" maxValue="1" defaultValue="1"/>
         </variable>
 
-      </identifiers>
+        <command name="go_to">
+          <description>Teleport local client to (x,y) coordinates, if in edit mode.</description>
+          <arguments>
+            <argument token="x" description="X coordinate"/>
+            <argument token="y" description="Y coordinate"/>
+            <argument token="s" description="Show teleport message." valueNotes="If 0, don't print. Otherwise, print the message."/>
+          </arguments>
+        </command>
+
+        <command name="showmapstats">
+          <description>Print some map statistics.</description>
+        </command>
+
+        <variable name="mapstats_hud">
+          <description>Controls whether or not to show map statistics on map load.</description>
+          <value token="N" description="0: Don't show, 1: Show" minValue="0" maxValue="1" defaultValue="0" />
+          <references>
+            <identifierReference identifier="showmapstats"/>
+          </references>
+        </variable>
+
+        <command name="showmapdims">
+          <description>Print map dimensions.</description>
+        </command>
+
+        <variable name="unsavededits">
+          <description>Holds the number of unsaved edits.</description>
+        </variable>
+
+        <command name="mapmodelbyname">
+          <description>Returns the slot number registered in the map config file of the model with the given name.</description>
+          <arguments>
+            <argument token="M" description="mapmodel name (with path)"/>
+          </arguments>
+          <examples>
+            <example>
+              <code><![CDATA[echo (mapmodelbyname "mapmodels/makke/platform_bridge")]]></code>
+              <explanation>Output: 5</explanation>
+            </example>
+          </examples>
+          <references>
+            <identifierReference identifier="mapmodelname"/>
+          </references>
+        </command>
+
+        <command name="mapmodelname">
+          <description>Returns the map model name (and path) of the mapmodel registered in the given slot number in the map config file.</description>
+          <arguments>
+            <argument token="N" description="mapmodel slot number"/>
+          </arguments>
+          <references>
+            <identifierReference identifier="mapmodelbyname"/>
+          </references>
+        </command>
+
+        </identifiers>
     </section>
     <!-- Editing Section Ends -->
     <!-- Menus Section Starts -->
@@ -5389,39 +5688,50 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         </command>
 
         <command name="menuitemcheckbox">
-          <argument token="T" description="text"/>
-          <argument token="V" description="value"/>
-          <argument token="A" description="action"/>
+          <description>Creates a checkbox menu item.</description>
+          <arguments>
+            <argument token="T" description="text"/>
+            <argument token="V" description="value"/>
+            <argument token="A" description="action"/>
+          </arguments>
         </command>
 
         <command name="menuitemimage">
-          <argument token="N" description="image filename"/>
-          <argument token="T" description="text"/>
-          <argument token="A" description="action"/>
-          <argument token="H" description="hoveraction"/>
+          <arguments>
+            <argument token="N" description="image filename"/>
+            <argument token="T" description="text"/>
+            <argument token="A" description="action"/>
+            <argument token="H" description="hoveraction"/>
+          </arguments>
         </command>
 
         <command name="menuitemkeyinput">
-          <argument token="T" description="text"/>
-          <argument token="B" description="bind command"/>
+          <arguments>
+            <argument token="T" description="text"/>
+            <argument token="B" description="bind command"/>
+          </arguments>
         </command>
 
         <command name="menuitemslider">
-          <argument token="T" description="text"/>
-          <argument token="L" description="min"/>
-          <argument token="U" description="max"/>
-          <argument token="V" description="value"/>
-          <argument token="S" description="step"/>
-          <argument token="D" description="display"/>
-          <argument token="A" description="action"/>
+          <arguments>
+            <argument token="T" description="text"/>
+            <argument token="L" description="min"/>
+            <argument token="U" description="max"/>
+            <argument token="V" description="value"/>
+            <argument token="S" description="step"/>
+            <argument token="D" description="display"/>
+            <argument token="A" description="action"/>
+          </arguments>
         </command>
 
         <command name="menuitemtextinput">
-          <argument token="T" description="text"/>
-          <argument token="V" description="value"/>
-          <argument token="A" description="action"/>
-          <argument token="H" description="hoveraction"/>
-          <argument token="M" description="maxchars"/>
+          <arguments>
+            <argument token="T" description="text"/>
+            <argument token="V" description="value"/>
+            <argument token="A" description="action"/>
+            <argument token="H" description="hoveraction"/>
+            <argument token="M" description="maxchars"/>
+          </arguments>
         </command>
 
         <command name="showmenu">
@@ -5922,6 +6232,28 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         <variable name="sc_name">
           <description>Sets the order priority for the column name on the scoreboard.</description>
           <value token="V" description="low priority: left, high priority: right" minValue="0" maxValue="100" defaultValue="7" />
+        </variable>
+
+        <variable name="accuracy">
+          <description>Sets whether or not to display the accuracy information window.</description>
+          <value token="N" description="1: on, 0: off" minValue="0" maxValue="1" defaultValue="0" />
+        </variable>
+
+        <command name="accuracyreset">
+          <description>Resets accuracy counters.</description>
+          <references>
+            <identifierReference identifier="accuracy"/>
+          </references>
+        </command>
+
+        <variable name="conalpha">
+          <description>Sets the transparency of the console.</description>
+          <value token="N" description="Alpha value" minValue="0" maxValue="255" defaultValue="255" />
+        </variable>
+
+        <variable name="votealpha">
+          <description>Sets the transparency of the vote display.</description>
+          <value token="N" description="Alpha value" minValue="0" maxValue="255" defaultValue="255" />
         </variable>
 
       </identifiers>
@@ -6935,6 +7267,13 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         <variable name="docvisible">
           <value token="V" description="" minValue="0" maxValue="1" defaultValue="1"/>
         </variable>
+
+        <command name="docwritetodoref">
+          <description>Writes out an XML documentation reference file containing undocumented identifiers or identifiers marked with "TODO"</description>
+          <arguments>
+            <argument token="i" description="Also include aliases? Optional" valueNotes="1: Include aliases, 0: Don't include. Default: 0"/>
+          </arguments>
+        </command>
 
       </identifiers>
     </section>
@@ -8216,7 +8555,14 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
           </remarks>
         </command>
 
-      </identifiers>
+        <command name="gonext">
+          <description>Calls a vote for the next map in the maprot.</description>
+          <arguments>
+            <argument token="i" description="TODO" valueNotes="Optional."/> <!-- Appears to skip this many maprot entries.... Most of the time? It's not entirely clear what this does.-->
+          </arguments>
+        </command>
+
+        </identifiers>
     </section>
     <!-- "TODO" Section Ends -->
   </sections>
